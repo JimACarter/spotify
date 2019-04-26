@@ -12,13 +12,12 @@ oauth_token = auth.get_token()
 
 def get_artist_id(artist_name, oauth_token):
     r = requests.get("https://api.spotify.com/v1/search",
-        params =    {   "q": '"{}"'.format(artist_name), "type": "artist"},
+        params =    {   "q": '"{}"'.format(artist_name), "type": "artist", "limit": 1},
         headers =   {   "Authorization": "Bearer {}".format(oauth_token),
                         "Accept": "application/json",
                         "Content-Type": "application/json"})
     r.raise_for_status()
-    # Return the ID of the most popular artist who's name exactly matches artist_name
-    return max(filter(lambda x: x['name'] == artist_name, r.json()["artists"]["items"]), key=lambda x: x['popularity'])['id']
+    return r.json()["artists"]["items"][0]['id']
 
 def get_random_album_id(artist_id, oauth_token):
     r = requests.get("https://api.spotify.com/v1/artists/{}/albums".format(artist_id),
