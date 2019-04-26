@@ -17,14 +17,8 @@ def get_artist_id(artist_name, oauth_token):
                         "Accept": "application/json",
                         "Content-Type": "application/json"})
     r.raise_for_status()
-    matching_artists = 0
-    for artist in r.json()["artists"]["items"]:
-        if artist["name"] == artist_name:
-            matching_artists += 1
-            id = artist["id"]
-
-    assert matching_artists == 1, "{} artists found matching '{}'".format(matching_artists, artist_name)
-    return id
+    # Return the ID of the most popular artist who's name exactly matches artist_name
+    return max(filter(lambda x: x['name'] == artist_name, r.json()["artists"]["items"]), key=lambda x: x['popularity'])['id']
 
 def get_random_album_id(artist_id, oauth_token):
     r = requests.get("https://api.spotify.com/v1/artists/{}/albums".format(artist_id),
